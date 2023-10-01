@@ -1,15 +1,12 @@
 import random
 
+# generates a random time signature, from 1 - 12 beats per measure, and with the whole, half, quarter, eighth, sixteenth, or thirty-second note getting the beat
 def generate_time_signature():
     upper_numeral = random.randint(1,12)
     lower_numeral_array = [1,2,4,8,16,32]
     lower_numeral_array_index = random.randint(0,5)
     lower_numeral = lower_numeral_array[lower_numeral_array_index]
-
     time_signature = [upper_numeral,lower_numeral]
-
-    #purely for readability, remember to comment out later
-    # print('the time signature is: ', str(upper_numeral) + '/' + str(lower_numeral))
 
     return(time_signature)
 
@@ -51,6 +48,5 @@ def generate_measure_pulses(beats_per_measure):
 # overall function that brings this all together
 def generate_timing():
     time_signature = generate_time_signature()
-    return(generate_measure_pulses(time_signature[0]))
-    
-# print(generate_timing())
+    return(time_signature, generate_measure_pulses(time_signature[0]))
+
