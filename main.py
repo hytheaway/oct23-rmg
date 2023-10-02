@@ -7,7 +7,7 @@ import noisegeneration as ng
 import wavegeneration as wg
 
 time_signature, measure_pulses = tg.generate_timing()
-bpm = random.randint(20,80)
+bpm = random.randint(40,70)
 beat_length = 60 / bpm
 
 def create_measures(time_signature, bpm):
@@ -24,11 +24,11 @@ def make_some_noise():
     for i in range(len(noise_measures)):
         for j in range(len(noise_measures[i])):
             if noise_measures[i][j] == 1:
-                filename = '_noise' + str(datetime.datetime.now())
+                filename = 'inputs/noise' + str(datetime.datetime.now())
                 ng.generate_noise(int(beat_length), int(random.randint(10,16)), 44100, filename)
                 filename_list.append(str(filename)+'.wav')
             elif noise_measures[i][j] == 0:
-                filename = '_noise' + str(datetime.datetime.now())
+                filename = 'inputs/noise' + str(datetime.datetime.now())
                 ng.generate_noise(int(beat_length), 0, 44100, filename)
                 filename_list.append(str(filename)+'.wav')
 
@@ -48,11 +48,11 @@ def make_some_music():
     for i in range(len(note_measures)):
         for j in range(len(note_measures[i])):
             if note_measures[i][j] == 1:
-                filename = '_note' + str(datetime.datetime.now())
+                filename = 'inputs/note' + str(datetime.datetime.now())
                 wg.generate_note(int(beat_length), 44100, filename)
                 filename_list.append(str(filename)+'.wav')
             elif note_measures[i][j] == 0:
-                filename = '_note' + str(datetime.datetime.now())
+                filename = 'inputs/note' + str(datetime.datetime.now())
                 ng.generate_noise(int(beat_length), 0, 44100, filename)
                 filename_list.append(str(filename)+'.wav')
     
