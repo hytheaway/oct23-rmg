@@ -2,10 +2,13 @@ import timinggeneration as tg
 import random
 import noisegeneration as ng
 import math
+from pydub import AudioSegment
+from pydub.playback import play
+import datetime
 
 time_signature, measure_pulses = tg.generate_timing()
 
-bpm = random.randint(20,250)
+bpm = random.randint(20,60)
 
 beat_length = 60 / bpm
 
@@ -29,3 +32,32 @@ def create_measures(time_signature, bpm):
         list_of_measures.append(tg.generate_measure_pulses(time_signature[0]))
     return(list_of_measures)
 
+music_measures = create_measures(time_signature, bpm)
+
+# print(music_measures)
+
+# generate noise wav files for each 1, and silent wav files for each 0
+def make_some_noise():
+    filename_list = []
+    for i in range(len(music_measures)):
+        for j in range(len(music_measures[i])):
+            if music_measures[i][j] == 1:
+                filename = datetime.datetime.now()
+                ng.generate_noise(int(beat_length), int(random.randint(10,16)), 44100, filename)
+                filename_list.append(str(filename)+'.wav')
+            elif music_measures[i][j] == 0:
+                filename = datetime.datetime.now()
+                ng.generate_noise(int(beat_length), 0, 44100, filename)
+                filename_list.append(str(filename)+'.wav')
+
+    for h in range(len(filename_list)):
+        filename_list[h] = AudioSegment.from_wav(filename_list[h])
+
+    final_song = AudioSegment.empty()
+    for k in range(len(filename_list)):
+        final_song = final_song + filename_list[k]
+        # print(final_song)
+
+    final_song.export('output.wav', format='wav')
+
+make_some_noise()
