@@ -7,3 +7,4 @@ known problems:
 - cant create functions to generate wav files with non-integer lengths (both rvs and linspace expect ints for length/amount of samples)
 - combining the individual voice's wav files together does not create the same result as playing them all together at once. 
     - likely because combining the wav files results in the waveform being altered, whereas playing them all back at once does not.
+- metadata file names don't exactly line up with the files they refer to.
