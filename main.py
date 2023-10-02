@@ -3,8 +3,8 @@ import random
 import noisegeneration as ng
 import math
 from pydub import AudioSegment
-from pydub.playback import play
 import datetime
+import wavegeneration as wg
 
 time_signature, measure_pulses = tg.generate_timing()
 
@@ -32,20 +32,20 @@ def create_measures(time_signature, bpm):
         list_of_measures.append(tg.generate_measure_pulses(time_signature[0]))
     return(list_of_measures)
 
-music_measures = create_measures(time_signature, bpm)
+noise_measures = create_measures(time_signature, bpm)
 
-# print(music_measures)
+# print(noise_measures)
 
 # generate noise wav files for each 1, and silent wav files for each 0
 def make_some_noise():
     filename_list = []
-    for i in range(len(music_measures)):
-        for j in range(len(music_measures[i])):
-            if music_measures[i][j] == 1:
+    for i in range(len(noise_measures)):
+        for j in range(len(noise_measures[i])):
+            if noise_measures[i][j] == 1:
                 filename = datetime.datetime.now()
                 ng.generate_noise(int(beat_length), int(random.randint(10,16)), 44100, filename)
                 filename_list.append(str(filename)+'.wav')
-            elif music_measures[i][j] == 0:
+            elif noise_measures[i][j] == 0:
                 filename = datetime.datetime.now()
                 ng.generate_noise(int(beat_length), 0, 44100, filename)
                 filename_list.append(str(filename)+'.wav')
@@ -53,11 +53,36 @@ def make_some_noise():
     for h in range(len(filename_list)):
         filename_list[h] = AudioSegment.from_wav(filename_list[h])
 
-    final_song = AudioSegment.empty()
+    final_noise = AudioSegment.empty()
     for k in range(len(filename_list)):
-        final_song = final_song + filename_list[k]
-        # print(final_song)
+        final_noise = final_noise + filename_list[k]
+        # print(final_noise)
 
-    final_song.export('output.wav', format='wav')
+    final_noise.export('make-some-noise.wav', format='wav')
 
 make_some_noise()
+
+def make_some_music():
+    note_measures = create_measures(time_signature, bpm)
+    filename_list = []
+    for i in range(len(note_measures)):
+        for j in range(len(note_measures[i])):
+            if note_measures[i][j] == 1:
+                filename = 'note' + str(datetime.datetime.now())
+                wg.generate_note(int(beat_length), 44100, filename)
+                filename_list.append(str(filename)+'.wav')
+            elif note_measures[i][j] == 0:
+                filename = 'note' + str(datetime.datetime.now())
+                ng.generate_noise(int(beat_length), 0, 44100, filename)
+                filename_list.append(str(filename)+'.wav')
+    
+    for h in range(len(filename_list)):
+        filename_list[h] = AudioSegment.from_wav(filename_list[h])
+
+    final_note = AudioSegment.empty()
+    for k in range(len(filename_list)):
+        final_note = final_note + filename_list[k]
+
+    final_note.export('make-some-music.wav', format='wav')
+
+make_some_music()
