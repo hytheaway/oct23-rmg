@@ -10,6 +10,7 @@ def generate_time_signature():
 
     return(time_signature)
 
+
 # determines where the pulses in a measure should be distributed, on which beats should a pulse occur. 
 # ensures that, as long as there are pulses to be distributed, they will only be distributed on beats that don't already have a pulse. 
 def distribute_pulses(pulses, measure):
@@ -31,6 +32,7 @@ def distribute_pulses(pulses, measure):
                 break
     return(measure)
 
+
 # determines how many pulses there should be in a measure, given the amount of beats in the measure
 def generate_measure_pulses(beats_per_measure):
     single_measure = []
@@ -41,9 +43,8 @@ def generate_measure_pulses(beats_per_measure):
     
     pulses_per_measure = random.randint(0, beats_per_measure)
 
-    # print('the pulses per measure is: ', pulses_per_measure)
-
     return(distribute_pulses(pulses_per_measure, single_measure))
+
 
 # overall function that brings this all together
 def generate_timing():
