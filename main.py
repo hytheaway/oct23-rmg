@@ -1,14 +1,17 @@
+import os
 import random
 import math
 import datetime
+import numpy as np
+from scipy.io import wavfile
 from pydub import AudioSegment
 import timinggeneration as tg
 import noisegeneration as ng
 import wavegeneration as wg
 
 time_signature, measure_pulses = tg.generate_timing()
-bpm = random.randint(40,70)
-beat_length = 60 / bpm
+bpm = random.randint(20,60)
+beat_length = math.ceil(60 / bpm)
 
 
 # generates the blueprint of which beats will get sound, writes this information to a metadata txt file
@@ -42,7 +45,7 @@ def make_some_noise():
         for j in range(len(noise_measures[i])):
             if noise_measures[i][j] == 1:
                 filename = 'inputs/noise' + str(datetime.datetime.now())
-                ng.generate_noise(int(beat_length), int(random.randint(10,16)), 44100, filename)
+                ng.generate_noise(int(beat_length), int(random.randint(1,10)), 44100, filename)
                 filename_list.append(str(filename)+'.wav')
             elif noise_measures[i][j] == 0:
                 filename = 'inputs/noise' + str(datetime.datetime.now())
@@ -91,11 +94,42 @@ def make_some_music():
     output_filename = str(datetime.datetime.now()) + 'make-some-music.wav'
     final_note.export('outputs/' + output_filename, format='wav')
 
+# gives option to clear last results
+def clear_previous():
+    clear_option = str(input('clear previous? y/n '))
+    if clear_option == 'y':
+        inputs_dir_name = 'inputs/'
+        inputs_dir_list = os.listdir(inputs_dir_name)
+        for item in inputs_dir_list:
+            if item.endswith('.wav'):
+                os.remove(os.path.join(inputs_dir_name, item))
+
+        outputs_dir_name = 'outputs/'
+        outputs_dir_list = os.listdir(outputs_dir_name)
+        for item in outputs_dir_list:
+            if item.endswith('.wav'):
+                os.remove(os.path.join(outputs_dir_name, item))
+
+        meta_dir_name = 'outputs/metadata/'
+        meta_dir_list = os.listdir(meta_dir_name)
+        for item in meta_dir_list:
+            if item.endswith('.txt'):
+                os.remove(os.path.join(meta_dir_name, item))
+    
+        continue_option = str(input('continue? y/n '))
+        if continue_option == 'n':
+            return('n')
+
 
 # main function
 # asks the user how many voices of noise they want to generate, then how many voices of sine waves they want to generate
 # generates the user-determined number of noise files, and the user-determined number of sine wave files. 
 def lets_do_this_thing():
+    
+    if clear_previous() == 'n':
+        return
+
+    # does this thing
     amount_of_noise = int(input('how much noise do ya wanna make? '))
     amount_of_music = int(input('how much music do ya wanna make? '))
     i = 0
@@ -106,5 +140,22 @@ def lets_do_this_thing():
     while j < amount_of_music:
         make_some_music()
         j += 1
+    
+    # turn .wav files into numpy arrays and adds them together to create one .wav file by the end of it, IS NOT THE SAME AS PLAYING ALL WAV FILES INDIVIDUALLY
+    output_wav_file_list = []
+    for item in os.listdir('outputs/'):
+        if item.endswith('.wav'):
+            output_wav_file_list.append(item)
+
+    object_list = []
+    for audio_file in output_wav_file_list:
+        a = wavfile.read('outputs/' + audio_file)
+        object_list.append(a[1])
+
+    for index in range(len(object_list)):
+        object_list[index] = object_list[index] + object_list[index-1]
+        combined_song = object_list[index]
+        
+    wavfile.write('outputs/destruct-o-matic.wav', 44100, combined_song.astype(np.int16))
 
 lets_do_this_thing()

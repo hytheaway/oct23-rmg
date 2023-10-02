@@ -18,7 +18,7 @@ def generate_note(seconds, sample_rate, filename):
         fs = fs / 2
     
     # determine how long (how many samples) should be in the resulting audio file
-    t = np.linspace(0, seconds, int(seconds * sample_rate), endpoint=False)
+    t = np.linspace(0, seconds, (seconds * sample_rate), endpoint=False)
 
     # create a numpy array object with the values provided
     note = np.iinfo(np.int16).max * np.sin(2 * np.pi * fs * t)

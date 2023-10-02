@@ -2,7 +2,7 @@ import random
 
 # generates a random time signature, from 1 - 12 beats per measure, and with the whole, half, quarter, eighth, sixteenth, or thirty-second note getting the beat
 def generate_time_signature():
-    upper_numeral = random.randint(1,12)
+    upper_numeral = random.randint(3,12)    #lower values here combined with a high bpm tend to result in non-functional wav files
     lower_numeral_array = [1,2,4,8,16,32]
     lower_numeral_array_index = random.randint(0,5)
     lower_numeral = lower_numeral_array[lower_numeral_array_index]
