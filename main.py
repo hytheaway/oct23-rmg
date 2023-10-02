@@ -1,52 +1,34 @@
-import timinggeneration as tg
 import random
-import noisegeneration as ng
 import math
-from pydub import AudioSegment
 import datetime
+from pydub import AudioSegment
+import timinggeneration as tg
+import noisegeneration as ng
 import wavegeneration as wg
 
 time_signature, measure_pulses = tg.generate_timing()
-
-bpm = random.randint(20,60)
-
+bpm = random.randint(20,80)
 beat_length = 60 / bpm
-
-# print('bpm: ', bpm)
-# print('beat length: ', beat_length)
-
-# how long is the song going to be? at least one minute. how many measures is that? depends on the bpm. 
-
-# measures_to_get_to_one_minute = bpm / time_signature[1]
-# measures_to_get_to_one_minute_ceil = math.ceil(bpm / time_signature[1])
-
-# print('time signature: ', time_signature)
-# print('measures to get to a minute: ', measures_to_get_to_one_minute)
-# print('rounded up: ', measures_to_get_to_one_minute_ceil)
 
 def create_measures(time_signature, bpm):
     total_measures = math.ceil(bpm / time_signature[0])
-
     list_of_measures = []
     for i in range(0, total_measures):
         list_of_measures.append(tg.generate_measure_pulses(time_signature[0]))
     return(list_of_measures)
 
-noise_measures = create_measures(time_signature, bpm)
-
-# print(noise_measures)
-
 # generate noise wav files for each 1, and silent wav files for each 0
 def make_some_noise():
+    noise_measures = create_measures(time_signature, bpm)
     filename_list = []
     for i in range(len(noise_measures)):
         for j in range(len(noise_measures[i])):
             if noise_measures[i][j] == 1:
-                filename = datetime.datetime.now()
+                filename = '_noise' + str(datetime.datetime.now())
                 ng.generate_noise(int(beat_length), int(random.randint(10,16)), 44100, filename)
                 filename_list.append(str(filename)+'.wav')
             elif noise_measures[i][j] == 0:
-                filename = datetime.datetime.now()
+                filename = '_noise' + str(datetime.datetime.now())
                 ng.generate_noise(int(beat_length), 0, 44100, filename)
                 filename_list.append(str(filename)+'.wav')
 
@@ -56,11 +38,9 @@ def make_some_noise():
     final_noise = AudioSegment.empty()
     for k in range(len(filename_list)):
         final_noise = final_noise + filename_list[k]
-        # print(final_noise)
 
-    final_noise.export('make-some-noise.wav', format='wav')
-
-make_some_noise()
+    output_filename = str(datetime.datetime.now()) + 'make-some-noise.wav'
+    final_noise.export('outputs/' + output_filename, format='wav')
 
 def make_some_music():
     note_measures = create_measures(time_signature, bpm)
@@ -68,11 +48,11 @@ def make_some_music():
     for i in range(len(note_measures)):
         for j in range(len(note_measures[i])):
             if note_measures[i][j] == 1:
-                filename = 'note' + str(datetime.datetime.now())
+                filename = '_note' + str(datetime.datetime.now())
                 wg.generate_note(int(beat_length), 44100, filename)
                 filename_list.append(str(filename)+'.wav')
             elif note_measures[i][j] == 0:
-                filename = 'note' + str(datetime.datetime.now())
+                filename = '_note' + str(datetime.datetime.now())
                 ng.generate_noise(int(beat_length), 0, 44100, filename)
                 filename_list.append(str(filename)+'.wav')
     
@@ -83,6 +63,19 @@ def make_some_music():
     for k in range(len(filename_list)):
         final_note = final_note + filename_list[k]
 
-    final_note.export('make-some-music.wav', format='wav')
+    output_filename = str(datetime.datetime.now()) + 'make-some-music.wav'
+    final_note.export('outputs/' + output_filename, format='wav')
 
-make_some_music()
+def lets_do_this_thing():
+    amount_of_noise = int(input('how much noise do ya wanna make? '))
+    amount_of_music = int(input('how much music do ya wanna make? '))
+    i = 0
+    while i < amount_of_noise:
+        make_some_noise()
+        i += 1
+    j = 0
+    while j < amount_of_music:
+        make_some_music()
+        j += 1
+
+lets_do_this_thing()

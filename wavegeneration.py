@@ -12,5 +12,3 @@ def generate_note(seconds, sample_rate, filename):
     t = np.linspace(0, seconds, int(seconds * sample_rate), endpoint=False)
     note = np.iinfo(np.int16).max * np.sin(2 * np.pi * fs * t)
     wavfile.write(str(filename)+'.wav', sample_rate, note.astype(np.int16))
-
-# generate_note(3, 44100)
